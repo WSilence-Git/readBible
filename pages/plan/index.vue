@@ -406,9 +406,9 @@ export default {
       uni.showLoading({
         mask: true
       })
-      db.collection('read-log').limit(25).get().then(({result: res}) => {
+      db.collection('read-log').orderBy('create_date desc').limit(50).get().then(({result: res}) => {
         if (res.errCode === 0) {
-          this.readLog = res.data
+          this.readLog = res.data.reverse()
           this.pointDate = this.today
           let todayLog = this.readLog.filter(item => item.date === this.today)
           this.readPlan.push(...todayLog)
