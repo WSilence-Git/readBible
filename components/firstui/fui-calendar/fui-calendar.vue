@@ -2,9 +2,9 @@
 
 	<view class="fui-calendar__wrap" :style="{width:dateWidth,background:background}">
 		<view class="fui-calendar__header">
-			<view class="fui-calendar__icon-left" :class="['fui-calendar__pl']" @tap.stop="changeYear(-1)">
-				<fui-icon :name="name" :color="arrowColor" :size="arrowSize"></fui-icon>
-			</view>
+<!--			<view class="fui-calendar__icon-left" :class="['fui-calendar__pl']" @tap.stop="changeYear(-1)">-->
+<!--				<fui-icon :name="name" :color="arrowColor" :size="arrowSize"></fui-icon>-->
+<!--			</view>-->
 			<view class="fui-calendar__icon-left" :class="['fui-calendar__pl']" @tap.stop="changeMonth(-1)"
 				v-if="!isMultiple">
 				<fui-icon :name="name" :color="arrowColor" :size="arrowSize"></fui-icon>
@@ -14,9 +14,9 @@
 			<view class="fui-calendar__pl" @tap.stop="changeMonth(1)" v-if="!isMultiple">
 				<fui-icon :name="name" :color="arrowColor" :size="arrowSize"></fui-icon>
 			</view>
-			<view class="fui-calendar__pl" @tap.stop="changeYear(1)">
-				<fui-icon :name="name" :color="arrowColor" :size="arrowSize"></fui-icon>
-			</view>
+<!--			<view class="fui-calendar__pl" @tap.stop="changeYear(1)">-->
+<!--				<fui-icon :name="name" :color="arrowColor" :size="arrowSize"></fui-icon>-->
+<!--			</view>-->
 		</view>
 		<view class="fui-calendar__date-header" :style="{borderBottomColor:lineColor}">
 			<text class="fui-calendar__date" :style="{color:titleColor,width:itemWidth}" v-for="(item,index) in header"

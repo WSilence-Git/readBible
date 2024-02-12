@@ -1,0 +1,49 @@
+{
+  "bsonType": "object",
+  "required": [],
+  "permission": {
+    "read": true,
+    "create": true,
+    "update": true,
+    "delete": true
+  },
+  "properties": {
+    "_id": {
+      "description": "ID，系统自动生成"
+    },
+    "name": {
+      "bsonType": "string",
+      "title": "名称",
+      "label": "名称：",
+      "description": "名称",
+      "trim": "both"
+    },
+    "chapter": {
+      "bsonType": "int",
+      "title": "章数",
+      "label": "章数：",
+      "description": "章数"
+    },
+    "group": {
+      "bsonType": "string",
+      "title": "分组",
+      "label": "分组：",
+      "description": "分组",
+      "trim": "both"
+    },
+    "date": {
+      "bsonType": "string",
+      "title": "日期",
+      "label": "日期：",
+      "description": "日期",
+      "trim": "both"
+    },
+    "create_date": {
+      "bsonType": "timestamp",
+      "description": "创建时间",
+      "forceDefaultValue": {
+        "$env": "now"
+      }
+    }
+  }
+}
