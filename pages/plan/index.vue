@@ -23,7 +23,7 @@
       <view v-for="(group,index) in groups" :key="index" class="group">
         <fui-checkbox-group name="checkbox">
           <view class="fui-list__item" style="width: 300px;">
-            <fui-label v-for="(item,iindex) in readPlan" :key="iindex" style="display: inline-flex">
+            <fui-label v-for="(item,iindex) in readPlan" :key="iindex" style="display: inline-flex;position: relative">
               <view class="fui-align__center" v-if="item.group===group">
                 <fui-checkbox
                     :disabled="!!item.date" :checked="!!item.date" :value="item.value"
@@ -32,6 +32,7 @@
                 </fui-checkbox>
                 <text class="fui-text">{{ `${item.name} ${item.chapter}` }}</text>
               </view>
+              <view class="play-code" v-if="item.group===group">{{item.code}}</view>
             </fui-label>
           </view>
         </fui-checkbox-group>
@@ -56,331 +57,397 @@ export default {
           name: '创', //创
           count: 50,
           group: 'A',
+          sn: 1
         },
         {
           name: '出', //出
           count: 40,
           group: 'A',
+          sn: 51
         },
         {
           name: '利',
           count: 27,
           group: 'A',
+          sn: 91
         },
         {
           name: '民',
           count: 36,
           group: 'A',
+          sn: 118
         },
         {
           name: '申',
           count: 34,
           group: 'A',
+          sn: 154
         },
         {
           name: '书',
           count: 24,
           group: 'A',
+          sn: 188
         },
         {
           name: '士',
           count: 21,
           group: 'A',
+          sn: 212
         },
         {
           name: '得',
           count: 4,
           group: 'A',
+          sn: 233
         },
         {
           name: '撒上',
           count: 31,
           group: 'A',
+          sn: 237
         },
         {
           name: '撒下',
           count: 24,
           group: 'A',
+          sn: 268
         },
         {
           name: '王上',
           count: 22,
           group: 'A',
+          sn: 292
         },
         {
           name: '王下',
           count: 25,
           group: 'A',
+          sn: 314
         },
         {
           name: '代上',
           count: 29,
           group: 'A',
+          sn: 339
         },
         {
           name: '代下',
           count: 36,
           group: 'A',
+          sn: 368
         },
         {
           name: '拉',
           count: 10,
           group: 'A',
+          sn: 404
         },
         {
           name: '尼',
           count: 13,
           group: 'A',
+          sn: 414
         },
         {
           name: '斯',
           count: 10,
           group: 'A',
+          sn: 427
         },
         {
           name: '伯',
           count: 42,
           group: 'A',
+          sn: 437
         },
         {
           name: '诗',
           count: 150,
           group: 'D',
+          sn: 479
         },
         {
           name: '箴',
           count: 31,
           group: 'C',
+          sn: 629
         },
         {
           name: '传',
           count: 12,
           group: 'A',
+          sn: 660
         },
         {
           name: '歌',
           count: 8,
           group: 'A',
+          sn: 672
         },
         {
           name: '赛',
           count: 66,
           group: 'A',
+          sn: 680
         },
         {
           name: '耶',
           count: 52,
           group: 'A',
+          sn: 746
         },
         {
           name: '哀',
           count: 5,
           group: 'A',
+          sn: 798
         },
         {
           name: '结',
           count: 48,
           group: 'A',
+          sn: 803
         },
         {
           name: '但',
           count: 12,
           group: 'A',
+          sn: 851
         },
         {
           name: '何',
           count: 14,
           group: 'A',
+          sn: 863
         },
         {
           name: '珥',
           count: 3,
           group: 'A',
+          sn: 877
         },
         {
           name: '摩',
           count: 9,
           group: 'A',
+          sn: 880
         },
         {
           name: '俄',
           count: 1,
           group: 'A',
+          sn: 889
         },
         {
           name: '拿',
           count: 4,
           group: 'A',
+          sn: 890
         },
         {
           name: '弥',
           count: 7,
           group: 'A',
+          sn: 894
         },
         {
           name: '鸿',
           count: 3,
           group: 'A',
+          sn: 901
         },
         {
           name: '哈',
           count: 3,
           group: 'A',
+          sn: 904
         },
         {
           name: '番',
           count: 3,
           group: 'A',
+          sn: 907
         },
         {
           name: '该',
           count: 2,
           group: 'A',
+          sn: 910
         },
         {
           name: '亚',
           count: 14,
           group: 'A',
+          sn: 912
         },
         {
           name: '玛',
           count: 4,
           group: 'A',
+          sn: 926
         },
         {
-          name: '太', //太
+          name: '太',
           count: 28,
           group: 'B',
+          sn: 930
         },
         {
           name: '可',
           count: 16,
           group: 'B',
+          sn: 958
         },
         {
           name: '路',
           count: 24,
           group: 'B',
+          sn: 974
         },
         {
           name: '约',
           count: 21,
           group: 'B',
+          sn: 998
         },
         {
           name: '徒',
           count: 28,
           group: 'B',
+          sn: 1019
         },
         {
           name: '罗',
           count: 16,
           group: 'B',
+          sn: 1047
         },
         {
           name: '林前',
           count: 16,
           group: 'B',
+          sn: 1063
         },
         {
           name: '林后',
           count: 13,
           group: 'B',
+          sn: 1079
         },
         {
           name: '加',
           count: 6,
           group: 'B',
+          sn: 1092
         },
         {
           name: '弗',
           count: 6,
           group: 'B',
+          sn: 1098
         },
         {
           name: '腓',
           count: 4,
           group: 'B',
+          sn: 1104
         },
         {
           name: '西',
           count: 4,
           group: 'B',
+          sn: 1108
         },
         {
           name: '帖前',
           count: 5,
           group: 'B',
+          sn: 1112
         },
         {
           name: '帖后',
           count: 3,
           group: 'B',
+          sn: 1117
         },
         {
           name: '提前',
           count: 6,
           group: 'B',
+          sn: 1120
         },
         {
           name: '提后',
           count: 4,
           group: 'B',
+          sn: 1126
         },
         {
           name: '多',
           count: 3,
           group: 'B',
+          sn: 1130
         },
         {
           name: '门',
           count: 1,
           group: 'B',
+          sn: 1133
         },
         {
           name: '来',
           count: 13,
           group: 'B',
+          sn: 1134
         },
         {
           name: '雅',
           count: 5,
           group: 'B',
+          sn: 1147
         },
         {
           name: '彼前',
           count: 5,
           group: 'B',
+          sn: 1152
         },
         {
           name: '彼后',
           count: 3,
           group: 'B',
+          sn: 1157
         },
         {
           name: '约壹',
           count: 5,
           group: 'B',
+          sn: 1160
         },
         {
           name: '约贰',
           count: 1,
           group: 'B',
+          sn: 1165
         },
         {
           name: '约叁',
           count: 1,
           group: 'B',
+          sn: 1166
         },
         {
           name: '犹',
           count: 1,
           group: 'B',
+          sn: 1167
         },
         {
           name: '启',
           count: 22,
           group: 'B',
+          sn: 1168
         },
       ],
       readLog: [],
@@ -454,7 +521,6 @@ export default {
         let findBook = this.books.find(book => {
           return book.name === lastRecord.name
         })
-
         //  [判断]是否读到本卷尾,找到该卷在整本书中的索引
         if (lastRecord.chapter === findBook.count) {
           let groupBooks = this.books.filter(book => book.group === group)
@@ -474,7 +540,8 @@ export default {
                   chapter: 1,
                   group: nextBook.group,
                   date: '',
-                  flag: nextBook.name + '1'
+                  flag: nextBook.name + '1',
+                  code: nextBook.sn
                 },
             )
           } else {
@@ -482,14 +549,15 @@ export default {
             let curIndex = this.books.findIndex(book => {
               return book.name === lastRecord.name
             })
-            let nextBook = this.books[curIndex + 1]
+            let nextBook = this.books.filter(book=>book.group===lastRecord.group)[curIndex + 1]
             this.readPlan.push(
                 {
                   name: nextBook.name,
                   chapter: 1,
                   group: nextBook.group,
                   date: '',
-                  flag: nextBook.name + '1'
+                  flag: nextBook.name + '1',
+                  code: nextBook.sn
                 },
             )
           }
@@ -500,7 +568,8 @@ export default {
                 chapter: lastRecord.chapter + 1,
                 group: lastRecord.group,
                 date: '',
-                flag: lastRecord.name + String(lastRecord.chapter + 1)
+                flag: lastRecord.name + String(lastRecord.chapter + 1),
+                code: lastRecord.code + 1
               },
           )
         }
@@ -586,5 +655,13 @@ export default {
 
 .fui-list--item:last-child {
   margin-right: 0;
+}
+
+.play-code{
+  position: absolute;
+  left: 28px;
+  bottom: -15px;
+  font-size: 12px;
+  color: #333333;
 }
 </style>

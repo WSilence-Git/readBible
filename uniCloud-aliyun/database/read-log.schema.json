@@ -24,6 +24,12 @@
       "label": "章数：",
       "description": "章数"
     },
+    "code": {
+      "bsonType": "int",
+      "title": "编码",
+      "label": "编码：",
+      "description": "编码"
+    },
     "group": {
       "bsonType": "string",
       "title": "分组",
