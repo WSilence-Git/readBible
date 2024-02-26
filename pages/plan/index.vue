@@ -546,7 +546,7 @@ export default {
             )
           } else {
             // 往后+1卷
-            let curIndex = this.books.findIndex(book => {
+            let curIndex = this.books.filter(book=>book.group===lastRecord.group).findIndex(book => {
               return book.name === lastRecord.name
             })
             let nextBook = this.books.filter(book=>book.group===lastRecord.group)[curIndex + 1]
@@ -575,6 +575,7 @@ export default {
         }
       }
     },
+    // 选中日期
     dateSelect(e) {
       this.pointDate = e.value
     },
