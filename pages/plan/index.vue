@@ -8,7 +8,7 @@
       <view v-for="(group,index) in groups" :key="index">
         <fui-checkbox-group name="checkbox">
           <view class="fui-list__item">
-            <fui-label v-for="(item,iindex) in todayFilter(readLog)" :key="iindex">
+            <fui-label v-for="(item,iindex) in readLog" :key="iindex">
               <view class="fui-align__center" v-if="item.group===group">
                 <fui-checkbox :disabled="true" :checked="true" :value="item.value" borderRadius="8rpx"></fui-checkbox>
                 <text class="fui-text">{{ `${item.name} ${item.chapter}` }}</text>
@@ -17,8 +17,9 @@
           </view>
         </fui-checkbox-group>
       </view>
+      <!--      <view style="text-align: center;margin-top: 20px">当日阅读{{ readLog.length }}章</view>-->
     </view>
-    <!--    阅读计划-->
+    <!--    今日阅读计划-->
     <view v-if="pointDate === today">
       <view v-for="(group,index) in groups" :key="index" class="group">
         <fui-checkbox-group name="checkbox">
@@ -32,14 +33,15 @@
                 </fui-checkbox>
                 <text class="fui-text">{{ `${item.name} ${item.chapter}` }}</text>
               </view>
-              <view class="play-code" v-if="item.group===group">{{item.code}}</view>
+              <view class="play-code" v-if="item.group===group">{{ item.code }}</view>
             </fui-label>
           </view>
         </fui-checkbox-group>
         <view class="tag-wrap">
-          <fui-tag text="+1" size="26" @click="pushReadPlan(group,1)" type="success"></fui-tag>
+          <fui-tag text="+1" size="26" @click="getReadPlan(group,1)" type="success"></fui-tag>
         </view>
       </view>
+      <view style="text-align: center;margin-top: 20px">今日阅读{{ readPlan.filter(item => item.date).length }}章</view>
     </view>
   </view>
 </template>
@@ -448,9 +450,10 @@ export default {
           count: 22,
           group: 'B',
           sn: 1168
-        },
+        }
       ],
       readLog: [],
+      readLogCache: {},
       readPlan: [],
       groups: ['A', 'B', 'C', 'D'],
     }
@@ -470,40 +473,33 @@ export default {
   methods: {
     // 初始化当天数据
     setReadPlan() {
-      uni.showLoading({
-        mask: true
-      })
-      db.collection('read-log').orderBy('create_date desc').limit(50).get().then(({result: res}) => {
-        if (res.errCode === 0) {
-          this.readLog = res.data.reverse()
-          this.pointDate = this.today
-          let todayLog = this.readLog.filter(item => item.date === this.today)
-          this.readPlan.push(...todayLog)
-          uni.hideLoading()
-          this.startPlan()
-        }
-      })
+      let data = {
+        value: this.today
+      }
+      this.dateSelect(data)
     },
     // 执行配置
-    startPlan() {
+    async startPlan() {
       let readConfig = [
-        {group: 'A', times: 2},
+        {group: 'A', times: 3},
         {group: 'B', times: 2},
         {group: 'C', times: 1},
         {group: 'D', times: 4}
       ]
-      readConfig.forEach(item => {
-        let readPlanLen = this.readPlan.filter(read => read.group === item.group).length
-        if (readPlanLen < item.times) {
-          this.pushReadPlan(item.group, item.times - readPlanLen)
+      for (let i = 0; i < readConfig.length; i++) {
+        let readPlanLen = this.readPlan.filter(read => read.group === readConfig[i].group).length
+        if (readPlanLen < readConfig[i].times) {
+          await this.getReadPlan(readConfig[i].group, readConfig[i].times - readPlanLen)
         }
-      })
+      }
     },
-    // 核心计划添加功能
-    pushReadPlan(group, times) {
+    // 核心计划添加功能part1
+    async getReadPlan(group, times) {
       for (let i = 0; i < times; i++) {
+        // 最后一次阅读记录 lastRecord
         let lastRecord = {}
         if (this.readPlan.length && this.readPlan.filter(item => item.group === group).length) {
+          // 今日有阅读记录
           let findAll = this.readPlan.filter(item => {
             return item.group === group
           })
@@ -511,76 +507,128 @@ export default {
           // lastRecord = this.readPlan.findLast(item => {
           //   return item.group === group
           // })
+          this.pushReadPlan(group, lastRecord)
         } else {
-          let findAll = this.readLog.filter(item => {
-            return item.group === group
-          })
-          lastRecord = findAll[findAll.length - 1]
-        }
-
-        let findBook = this.books.find(book => {
-          return book.name === lastRecord.name
-        })
-        //  [判断]是否读到本卷尾,找到该卷在整本书中的索引
-        if (lastRecord.chapter === findBook.count) {
-          let groupBooks = this.books.filter(book => book.group === group)
-          // 当前组的总长度
-          let curGroupLen = groupBooks.length
-          // 本卷所在当前组的索引
-          let groupIndex = groupBooks.findIndex(groupBook => {
-            return groupBook.name === lastRecord.name
-          })
-          // [判断]是否读到当前组最后一卷
-          if (curGroupLen === groupIndex + 1) {
-            // 回到卷首
-            let nextBook = groupBooks[0]
-            this.readPlan.push(
-                {
-                  name: nextBook.name,
-                  chapter: 1,
-                  group: nextBook.group,
-                  date: '',
-                  flag: nextBook.name + '1',
-                  code: nextBook.sn
-                },
-            )
-          } else {
-            // 往后+1卷
-            let curIndex = this.books.filter(book=>book.group===lastRecord.group).findIndex(book => {
-              return book.name === lastRecord.name
-            })
-            let nextBook = this.books.filter(book=>book.group===lastRecord.group)[curIndex + 1]
-            this.readPlan.push(
-                {
-                  name: nextBook.name,
-                  chapter: 1,
-                  group: nextBook.group,
-                  date: '',
-                  flag: nextBook.name + '1',
-                  code: nextBook.sn
-                },
-            )
+          // 今日无阅读记录
+          const {result: res} = await db.collection('read-log').orderBy('create_date desc').where({group: group}).limit(1).get()
+          if (res.errCode === 0) {
+            if (res.data && res.data.length) {
+              lastRecord = res.data[0]
+              // 获取到改组最后一次阅读记录 lastRecord
+              this.pushReadPlan(group, lastRecord)
+            } else {
+              // 从来没有阅读该组
+              let firstBook = this.books.find(book => {
+                return book.group === group
+              })
+              this.readPlan.push(
+                  {
+                    name: firstBook.name,
+                    chapter: 1,
+                    group: firstBook.group,
+                    date: '',
+                    flag: firstBook.name + String(1),
+                    code: firstBook.sn
+                  },
+              )
+            }
           }
-        } else {
+        }
+      }
+    },
+    // 核心计划添加功能part2
+    pushReadPlan(group, lastRecord) {
+      // findBook:在所有books中找到最后一次阅读那卷书
+      let findBook = this.books.find(book => {
+        return book.name === lastRecord.name
+      })
+      //  [判断]是否读到本卷尾,找到该卷在整本书中的索引
+      if (lastRecord.chapter === findBook.count) {
+        let groupBooks = this.books.filter(book => book.group === group)
+        // 当前组的总长度
+        let curGroupLen = groupBooks.length
+        // 本卷所在当前组的索引
+        let groupIndex = groupBooks.findIndex(groupBook => {
+          return groupBook.name === lastRecord.name
+        })
+        // [判断]是否读到当前组最后一卷
+        if (curGroupLen === groupIndex + 1) {
+          // 回到卷首
+          let nextBook = groupBooks[0]
           this.readPlan.push(
               {
-                name: lastRecord.name,
-                chapter: lastRecord.chapter + 1,
-                group: lastRecord.group,
+                name: nextBook.name,
+                chapter: 1,
+                group: nextBook.group,
                 date: '',
-                flag: lastRecord.name + String(lastRecord.chapter + 1),
-                code: lastRecord.code + 1
+                flag: nextBook.name + '1',
+                code: nextBook.sn
+              },
+          )
+        } else {
+          // 往后+1卷
+          let curIndex = this.books.filter(book => book.group === lastRecord.group).findIndex(book => {
+            return book.name === lastRecord.name
+          })
+          let nextBook = this.books.filter(book => book.group === lastRecord.group)[curIndex + 1]
+          this.readPlan.push(
+              {
+                name: nextBook.name,
+                chapter: 1,
+                group: nextBook.group,
+                date: '',
+                flag: nextBook.name + '1',
+                code: nextBook.sn
               },
           )
         }
+      } else {
+        this.readPlan.push(
+            {
+              name: lastRecord.name,
+              chapter: lastRecord.chapter + 1,
+              group: lastRecord.group,
+              date: '',
+              flag: lastRecord.name + String(lastRecord.chapter + 1),
+              code: lastRecord.code + 1
+            },
+        )
       }
     },
     // 选中日期
     dateSelect(e) {
       this.pointDate = e.value
-    },
-    todayFilter(arr) {
-      return arr.filter(item => item.date === this.pointDate)
+      // 查看今天
+      if (e.value === this.today) {
+        if (!this.readPlan.length) {
+          uni.showLoading({
+            mask: true
+          })
+          db.collection('read-log').orderBy('create_date desc').where({date: e.value}).get().then(({result: res}) => {
+            if (res.errCode === 0) {
+              this.readPlan = res.data.reverse()
+              uni.hideLoading()
+              this.startPlan()
+            }
+          })
+        }
+      } else {
+        if (this.readLogCache[this.pointDate]) {
+          this.$set(this, "readLog", this.readLogCache[this.pointDate]);
+        } else {
+          // 查看非今天记录
+          uni.showLoading({
+            mask: true
+          })
+          db.collection('read-log').orderBy('create_date desc').where({date: e.value}).get().then(({result: res}) => {
+            if (res.errCode === 0) {
+              this.readLog = res.data.reverse()
+              this.$set(this.readLogCache, this.pointDate, Object.assign({}, this.readLog));
+              uni.hideLoading()
+            }
+          })
+        }
+      }
     },
     readCheck(e, flag) {
       let findObj = this.readPlan.find(item => item.flag === flag)
@@ -658,7 +706,7 @@ export default {
   margin-right: 0;
 }
 
-.play-code{
+.play-code {
   position: absolute;
   left: 28px;
   bottom: -15px;
