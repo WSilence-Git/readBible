@@ -38,7 +38,7 @@
           </view>
         </fui-checkbox-group>
         <view class="tag-wrap">
-          <fui-tag text="+1" size="26" @click="getReadPlan(group,1)" type="success"></fui-tag>
+          <fui-tag text="+1" size="26" v-if="readPlan.filter(item=>item.group===group).length" @click="getReadPlan(group,1)" type="success"></fui-tag>
         </view>
       </view>
       <view style="text-align: center;margin-top: 20px">今日阅读{{ readPlan.filter(item => item.date).length }}章</view>
